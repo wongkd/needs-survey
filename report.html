@@ -216,12 +216,11 @@ body {
 // ============ Label Maps ============
 const LABELS = {
   area: {'60-':'60㎡以下','60-90':'60-90㎡','90-120':'90-120㎡','120-160':'120-160㎡','160-200':'160-200㎡','200+':'200㎡以上'},
+  area_villa: {'60-':'60㎡以下','60-90':'60-90㎡','90-120':'90-120㎡','120-160':'120-160㎡','160-200':'160-200㎡','200+':'200㎡以上'},
   house_type: {'apartment':'普通商品房','loft':'复式/LOFT','self_build':'自建房','villa':'别墅'},
   layout: {'1br':'一居室','2br':'两居室','3br':'三居室','4br+':'四居室及以上','layout_unsure':'待设计师建议'},
   layout_partial: {'1br':'一居室','2br':'两居室','3br':'三居室','4br+':'四居室及以上','layout_unsure':'待设计师建议'},
   renovation_scope: {'whole':'整栋整体装修','partial':'只装部分楼层'},
-  floor: {'low':'低层(1-3层)','mid':'中层(4-6层)','high':'中高层(6层以上)'},
-  facing: {'south':'朝南','north':'朝北','east':'朝东','west':'朝西','ns':'南北通透','na':'暂不清楚'},
   status: {'rough':'毛坯新房','old':'旧房全翻','partial':'局部改造','fine':'精装微改'},
   count: {'1':'1人独居','2':'2人','3':'3人','4':'4人','5+':'5人及以上'},
   members: {'couple':'夫妻/伴侣','child_young':'婴幼儿','child_school':'学龄儿童','teen':'青少年','elder':'长辈/老人','single':'单身'},
@@ -664,7 +663,7 @@ function buildProfile(a, budget, areaNum) {
   // Fengshui
   if (a.fs_level === 'fs_high' || a.fs_level === 'fs_moderate') tags.push('讲究风水');
 
-  const oneLiner = `这是一位${a.area ? label('area', a.area)+'的' : ''}${a.facing ? label('facing', a.facing)+'，' : ''}预算${budget}万的客户。${parts.join('，')}。`;
+  const oneLiner = `这是一位${a.area ? label('area', a.area)+'的' : ''}预算${budget}万的客户。${parts.join('，')}。`;
 
   return { oneLiner, tags };
 }
@@ -842,6 +841,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   try {
     const answers = JSON.parse(raw);
+    // 归一化：自建房/别墅的面积
+    if (answers.area_villa && !answers.area) answers.area = answers.area_villa;
     document.getElementById('report').innerHTML = buildReport(answers);
   } catch(e) {
     document.getElementById('report').innerHTML = '<div class="container"><div class="empty-hint"><p>数据解析异常，请重新填写</p></div></div>';
