@@ -294,6 +294,21 @@ body {
   padding: 0 4px;
 }
 
+.budget-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.budget-input-row .text-input {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  max-width: 140px;
+}
+
 .budget-slider {
   width: 100%;
   -webkit-appearance: none;
@@ -533,15 +548,18 @@ const sections = [
         options: [
           { v:'1br', l:'一居室' },{ v:'2br', l:'两居室' },
           { v:'3br', l:'三居室' },{ v:'4br+', l:'四居室及以上' },
-          { v:'loft', l:'复式/LOFT' },{ v:'villa', l:'别墅' }
+          { v:'loft', l:'复式/LOFT' },{ v:'villa', l:'别墅' },
+          { v:'self_build', l:'🏠 自建房' }
+        ],
+        followUp: [
+          { match: ['villa','self_build'], id: 'floor', type: 'choice', label: '楼层偏好',
+            options: [{ v:'low', l:'低层(1-6楼)' },{ v:'mid', l:'中层(7-15楼)' },
+              { v:'high', l:'高层(16楼+)' },{ v:'any', l:'无所谓' }]},
+          { match: ['villa','self_build'], id: 'facing', type: 'choice', label: '朝向',
+            options: [{ v:'south', l:'朝南' },{ v:'north', l:'朝北' },
+              { v:'east', l:'朝东' },{ v:'west', l:'朝西' },
+              { v:'ns', l:'南北通透' },{ v:'na', l:'暂不清楚' }]}
         ]},
-      { id: 'floor', type: 'choice', label: '楼层偏好（如有选择）',
-        options: [{ v:'low', l:'低层(1-6楼)' },{ v:'mid', l:'中层(7-15楼)' },
-          { v:'high', l:'高层(16楼+)' },{ v:'any', l:'无所谓' }]},
-      { id: 'facing', type: 'choice', label: '朝向', required: true,
-        options: [{ v:'south', l:'朝南' },{ v:'north', l:'朝北' },
-          { v:'east', l:'朝东' },{ v:'west', l:'朝西' },
-          { v:'ns', l:'南北通透' },{ v:'na', l:'暂不清楚' }]},
       { id: 'status', type: 'choice', label: '房屋当前状态', required: true,
         options: [{ v:'rough', l:'毛坯新房' },{ v:'old', l:'旧房全翻' },
           { v:'partial', l:'局部改造' },{ v:'fine', l:'精装微改' }]}
@@ -712,7 +730,7 @@ const sections = [
   {
     id: 'fengshui', icon: '🔮', title: '风水讲究', desc: '有些传统，值得尊重',
     questions: [
-      { id: 'fs_level', type: 'choice', label: '您对风水的在意程度', required: true,
+      { id: 'fs_level', type: 'choice', label: '您对风水的在意程度',
         options: [{ v:'fs_high', l:'很在意，装修要严格避讳' },
           { v:'fs_moderate', l:'一般在意，基本讲究要有' },
           { v:'fs_low', l:'不太在意，过得去就行' },
@@ -726,6 +744,7 @@ const sections = [
           { match: ['fs_high','fs_moderate'], id: 'fs_master', type: 'choice', label: '是否已请过风水师？',
             options: [{ v:'fs_yes', l:'已请，有具体要求' },{ v:'fs_no', l:'还没请' },
               { v:'fs_plan', l:'打算请' }]},
+          { match: ['fs_high','fs_moderate'], id: 'fs_details', type: 'text', label: '其他风水讲究（自由补充）', placeholder: '如果上面没列到的风水讲究，请在这里补充...' },
           { match: 'fs_yes', id: 'fs_notes', type: 'text', label: '风水师的具体要求', placeholder: '简单说一下风水师提的要求...' }
         ]},
       { id: 'gods', type: 'choice', label: '是否需要设置神位/佛龛？',
@@ -902,9 +921,13 @@ function renderQuestion(q, qi, secIdx) {
   else if (q.type === 'slider') {
     const curVal = val || q.default;
     html += `<div class="budget-slider-wrap">
-      <div class="budget-value">${curVal}<span> ${q.unit}</span></div>
-      <input type="range" class="budget-slider" min="${q.min}" max="${q.max}" step="${q.step}" value="${curVal}"
-        oninput="onSliderChange('${q.id}', this.value, '${q.unit}')">
+      <div class="budget-input-row">
+        <input type="number" class="text-input" id="input-${q.id}" value="${curVal}" min="${q.min}" max="${q.max}" step="${q.step}"
+          oninput="onSliderInput('${q.id}', this.value, '${q.unit}', ${q.min}, ${q.max})">
+        <span style="font-size:15px;color:var(--text-light);white-space:nowrap">${q.unit}</span>
+      </div>
+      <input type="range" class="budget-slider" id="slider-${q.id}" min="${q.min}" max="${q.max}" step="${q.step}" value="${curVal}"
+        oninput="onSliderChange('${q.id}', this.value)">
       <div class="budget-marks">${(q.marks||[]).map(m=>`<span>${m}</span>`).join('')}</div></div>`;
   }
 
@@ -994,11 +1017,21 @@ function onFuMultiChange(id, value, el) {
   }
 }
 
-function onSliderChange(id, value, unit) {
+function onSliderChange(id, value) {
   answers[id] = value;
-  const parent = document.getElementById('main');
-  const valEl = parent.querySelector('.budget-value');
-  if (valEl) valEl.innerHTML = `${value}<span> ${unit}</span>`;
+  const inputEl = document.getElementById('input-'+id);
+  if (inputEl) inputEl.value = value;
+}
+
+function onSliderInput(id, value, unit, min, max) {
+  let v = parseInt(value) || 0;
+  if (v < min) v = min;
+  if (v > max) v = max;
+  answers[id] = v;
+  const sliderEl = document.getElementById('slider-'+id);
+  if (sliderEl) sliderEl.value = v;
+  const inputEl = document.getElementById('input-'+id);
+  if (inputEl && parseInt(inputEl.value) !== v) inputEl.value = v;
 }
 
 function onTextChange(id, value) {
