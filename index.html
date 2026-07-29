@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>表里如一 · 客户需求调研</title>
+<style>
+:root {
+  --gold: #AE8555;
+  --gold-light: #C9A87C;
+  --gold-bg: #F5EDE3;
+  --dark: #2F3943;
+  --dark-light: #4A5568;
+  --bg: #F7F4F0;
+  --card: #FFFFFF;
+  --border: #E8E3DC;
+  --text: #2F3943;
+  --text-light: #718096;
+  --danger: #E53E3E;
+  --success: #38A169;
+  --shadow: 0 2px 16px rgba(47, 57, 67, 0.06);
+  --shadow-lg: 0 8px 32px rgba(47, 57, 67, 0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--dark) 0%, #3D4F5F 100%);
+  color: #fff;
+  padding: 24px 20px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(47,57,67,0.15);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.header-logo {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+
+.header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.header-sub {
+  font-size: 12px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+/* Progress */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  opacity: 0.8;
+  white-space: nowrap;
+  min-width: 48px;
+  text-align: right;
+}
+
+/* Main content */
+.main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 100px;
+}
+
+/* Section wrapper */
+.section-wrap {
+  display: none;
+}
+
+.section-wrap.active {
+  display: block;
+  animation: fadeSlideIn 0.4s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Card */
+.section-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.section-icon {
+  font-size: 28px;
+  width: 44px; height: 44px;
+  background: var(--gold-bg);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  padding-left: 54px;
+}
+
+/* Question block */
+.q-block {
+  margin-bottom: 20px;
+}
+
+.q-block:last-child { margin-bottom: 0; }
+
+.q-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.q-required {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+/* Option grid */
+.opt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.opt-grid.col3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.opt-grid.col1 {
+  grid-template-columns: 1fr;
+}
+
+/* Option item */
+.opt-item {
+  position: relative;
+  cursor: pointer;
+}
+
+.opt-item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opt-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--dark-light);
+  transition: var(--transition);
+  user-select: none;
+}
+
+.opt-item input:checked + .opt-label {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--dark);
+  font-weight: 500;
+  box-shadow: 0 0 0 2px rgba(174,133,85,0.12);
+}
+
+.opt-label:active {
+  transform: scale(0.98);
+}
+
+.opt-emoji {
+  font-size: 18px;
+}
+
+/* Style cards */
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.style-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.style-card input { position: absolute; opacity: 0; }
+
+.style-card-inner {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.style-card input:checked + .style-card-inner {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(174,133,85,0.2);
+}
+
+.style-preview {
+  height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.style-name {
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--dark);
+  background: #fff;
+}
+
+/* Budget slider */
+.budget-slider-wrap {
+  padding: 0 4px;
+}
+
+.budget-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  background: linear-gradient(to right, var(--gold-bg), var(--gold));
+  border-radius: 3px;
+  outline: none;
+}
+
+.budget-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px; height: 28px;
+  background: #fff;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.budget-value {
+  text-align: center;
+  margin: 12px 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.budget-value span { font-size: 14px; font-weight: 400; }
+
+.budget-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+/* Follow-up question */
+.follow-up {
+  margin-top: 10px;
+  padding: 14px;
+  background: var(--gold-bg);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--gold);
+  display: none;
+}
+
+.follow-up.show { display: block; animation: fadeSlideIn 0.3s ease; }
+
+.follow-up .q-label { margin-bottom: 6px; font-size: 13px; }
+
+/* Chips for multi-select */
+.chip-wrap {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.chip-item {
+  position: relative; cursor: pointer;
+}
+
+.chip-item input { position: absolute; opacity: 0; }
+
+.chip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  transition: var(--transition);
+}
+
+.chip-item input:checked + .chip-label {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Navigation */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-prev {
+  flex: 0 0 auto;
+  background: var(--bg);
+  color: var(--text-light);
+  border: 1.5px solid var(--border);
+}
+
+.btn-next {
+  flex: 1;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(47,57,67,0.25);
+}
+
+.btn-submit {
+  flex: 1;
+  background: linear-gradient(135deg, var(--gold) 0%, #C9A87C 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(174,133,85,0.35);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+}
+
+/* Text input */
+.text-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--dark);
+  outline: none;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.text-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(174,133,85,0.1);
+}
+
+/* Section indicator dots */
+.section-dots {
+  display: flex;
+  gap: 6px;
+  padding: 0 20px;
+  margin-top: -8px;
+  position: sticky;
+  top: 112px;
+  z-index: 50;
+  background: var(--bg);
+  padding-top: 8px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.dot.done { background: var(--gold); opacity: 0.5; }
+.dot.active { background: var(--gold); width: 24px; border-radius: 4px; }
+
+/* toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 13px;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.toast.show { opacity: 1; }
+
+/* Responsive */
+@media (min-width: 640px) {
+  .opt-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .style-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="header-logo">🏗️</div>
+    <div>
+      <h1>表里如一 · 客户需求调研</h1>
+      <div class="header-sub">广东表里如一工程有限公司</div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0/10</div>
+  </div>
+</div>
+
+<div class="section-dots" id="sectionDots"></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="main" id="main"></div>
+
+<script>
+// ============ DATA: 10 Sections ============
+const sections = [
+  {
+    id: 'basic', icon: '🏠', title: '房屋基础', desc: '先了解一下房子的基本情况',
+    questions: [
+      { id: 'area', type: 'choice', label: '房屋面积', required: true,
+        options: [
+          { v:'60-', l:'60㎡以下' },{ v:'60-90', l:'60-90㎡' },
+          { v:'90-120', l:'90-120㎡' },{ v:'120-160', l:'120-160㎡' },
+          { v:'160-200', l:'160-200㎡' },{ v:'200+', l:'200㎡以上' }
+        ]},
+      { id: 'layout', type: 'choice', label: '户型', required: true,
+        options: [
+          { v:'1br', l:'一居室' },{ v:'2br', l:'两居室' },
+          { v:'3br', l:'三居室' },{ v:'4br+', l:'四居室及以上' },
+          { v:'loft', l:'复式/LOFT' },{ v:'villa', l:'别墅' }
+        ]},
+      { id: 'floor', type: 'choice', label: '楼层偏好（如有选择）',
+        options: [{ v:'low', l:'低层(1-6楼)' },{ v:'mid', l:'中层(7-15楼)' },
+          { v:'high', l:'高层(16楼+)' },{ v:'any', l:'无所谓' }]},
+      { id: 'facing', type: 'choice', label: '朝向', required: true,
+        options: [{ v:'south', l:'朝南' },{ v:'north', l:'朝北' },
+          { v:'east', l:'朝东' },{ v:'west', l:'朝西' },
+          { v:'ns', l:'南北通透' },{ v:'na', l:'暂不清楚' }]},
+      { id: 'status', type: 'choice', label: '房屋当前状态', required: true,
+        options: [{ v:'rough', l:'毛坯新房' },{ v:'old', l:'旧房全翻' },
+          { v:'partial', l:'局部改造' },{ v:'fine', l:'精装微改' }]}
+    ]
+  },
+  {
+    id: 'people', icon: '👨‍👩‍👧‍👦', title: '居住画像', desc: '谁会住在这个家里？',
+    questions: [
+      { id: 'count', type: 'choice', label: '常住人数', required: true,
+        options: [{ v:'1', l:'1人独居' },{ v:'2', l:'2人' },
+          { v:'3', l:'3人' },{ v:'4', l:'4人' },{ v:'5+', l:'5人及以上' }]},
+      { id: 'members', type: 'multi', label: '家庭成员构成（可多选）', required: true,
+        options: [{ v:'couple', l:'🧑‍🤝‍🧑 夫妻/伴侣' },{ v:'child_young', l:'👶 婴幼儿' },
+          { v:'child_school', l:'🧒 学龄儿童' },{ v:'teen', l:'🧑 青少年' },
+          { v:'elder', l:'👴 长辈/老人' },{ v:'single', l:'🧑 单身' }]},
+      { id: 'future', type: 'choice', label: '未来3年居住变化', required: true,
+        options: [{ v:'stable', l:'基本不变' },{ v:'newborn', l:'计划要孩子' },
+          { v:'parent_in', l:'父母可能搬来住' },{ v:'child_out', l:'孩子可能离家' },
+          { v:'other_change', l:'其他变化' }]}
+    ]
+  },
+  {
+    id: 'members', icon: '🐱', title: '生活成员', desc: '除了人，还有谁？',
+    questions: [
+      { id: 'pets', type: 'multi', label: '养宠物吗？', required: true,
+        options: [{ v:'dog', l:'🐕 狗' },{ v:'cat', l:'🐈 猫' },
+          { v:'fish', l:'🐟 鱼/水族' },{ v:'bird', l:'🐦 鸟' },
+          { v:'other_pet', l:'🦎 其他宠物' },{ v:'none', l:'不养宠物' }],
+        followUp: [
+          { match: 'dog', id: 'dog_breed', type: 'choice', label: '狗的体型',
+            options: [{ v:'small', l:'小型犬' },{ v:'medium', l:'中型犬' },{ v:'large', l:'大型犬' }]},
+          { match: 'cat', id: 'cat_count', type: 'choice', label: '猫的数量',
+            options: [{ v:'1', l:'1只' },{ v:'2', l:'2只' },{ v:'3+', l:'3只及以上' }]},
+          { match: 'dog', id: 'pet_space', type: 'multi', label: '宠物专属需求',
+            options: [{ v:'pet_bath', l:'宠物洗澡区' },{ v:'pet_door', l:'宠物门/任意门' },
+              { v:'pet_feed', l:'固定喂食区' },{ v:'pet_climb', l:'爬架/活动区' }]},
+          { match: 'cat', id: 'cat_space', type: 'multi', label: '猫咪空间需求',
+            options: [{ v:'cat_wall', l:'墙面猫道/空中走廊' },{ v:'cat_window', l:'窗台猫窝' },
+              { v:'cat_litter', l:'隐藏式猫砂区' },{ v:'cat_tree', l:'大型猫爬架' }]}
+        ]},
+      { id: 'elder_live', type: 'choice', label: '有老人同住吗？',
+        options: [{ v:'yes_full', l:'长期同住' },{ v:'yes_part', l:'偶尔来住' },{ v:'no', l:'不同住' }],
+        followUp: [
+          { match: ['yes_full','yes_part'], id: 'elder_needs', type: 'multi', label: '适老化需求（可多选）',
+            options: [{ v:'elder_no_step', l:'全屋无高差/无门槛' },{ v:'elder_rail', l:'扶手/安全抓杆' },
+              { v:'elder_light', l:'起夜感应灯' },{ v:'elder_bath', l:'无障碍卫生间' },
+              { v:'elder_bed', l:'适老化卧室' },{ v:'elder_lift', l:'家用电梯/升降椅' }]}
+        ]},
+      { id: 'has_kids', type: 'choice', label: '有小孩吗？',
+        options: [{ v:'yes_baby', l:'有，婴幼儿' },{ v:'yes_kid', l:'有，学龄儿童' },
+          { v:'yes_teen', l:'有，青少年' },{ v:'no', l:'没有' }],
+        followUp: [
+          { match: ['yes_baby','yes_kid'], id: 'kid_needs', type: 'multi', label: '儿童需求（可多选）',
+            options: [{ v:'kid_room', l:'独立儿童房' },{ v:'kid_play', l:'专属游戏区' },
+              { v:'kid_study', l:'学习区/书桌' },{ v:'kid_safe', l:'安全防撞设计' },
+              { v:'kid_low', l:'儿童身高适配家具' },{ v:'kid_store', l:'玩具收纳' }]}
+        ]}
+    ]
+  },
+  {
+    id: 'spaces', icon: '🎮', title: '功能空间', desc: '家里需要哪些功能空间？',
+    questions: [
+      { id: 'rooms', type: 'multi', label: '需要哪些功能空间？（可多选）', required: true,
+        options: [
+          { v:'esports', l:'🎮 电竞房' },{ v:'study', l:'📚 书房' },
+          { v:'home_theater', l:'🎬 家庭影音' },{ v:'gym', l:'🏋️ 健身区' },
+          { v:'tea', l:'🍵 茶室' },{ v:'bar', l:'🍸 调酒吧台' },
+          { v:'walkin', l:'👔 独立衣帽间' },{ v:'suite', l:'🛏️ 主卧套间' },
+          { v:'guest', l:'🛋️ 客房' },{ v:'laundry', l:'🧺 家政间' },
+          { v:'storage', l:'📦 储物间' },{ v:'garden', l:'🌿 阳台花园' }
+        ],
+        followUp: [
+          { match: 'esports', id: 'esports_detail', type: 'multi', label: '电竞房具体需求',
+            options: [{ v:'es_sound', l:'隔音处理' },{ v:'es_rgb', l:'RGB氛围灯光' },
+              { v:'es_multi', l:'双人/多人位' },{ v:'es_cool', l:'独立空调散热' },
+              { v:'es_display', l:'手办展示柜' },{ v:'es_stream', l:'直播设备区' }]},
+          { match: 'study', id: 'study_detail', type: 'multi', label: '书房需求',
+            options: [{ v:'st_quiet', l:'绝对安静隔音' },{ v:'st_books', l:'大量藏书书架' },
+              { v:'st_double', l:'双人办公位' },{ v:'st_relax', l:'阅读休闲角' }]},
+          { match: 'home_theater', id: 'theater_detail', type: 'multi', label: '影音室需求',
+            options: [{ v:'th_projector', l:'投影+幕布' },{ v:'th_tv', l:'大屏电视' },
+              { v:'th_sound', l:'专业隔音' },{ v:'th_karaoke', l:'K歌功能' }]},
+          { match: 'suite', id: 'suite_detail', type: 'multi', label: '套间包含哪些？',
+            options: [{ v:'su_bath', l:'独立卫浴' },{ v:'su_closet', l:'步入式衣帽间' },
+              { v:'su_balcony', l:'独立阳台' },{ v:'su_sit', l:'起居区/小客厅' }]}
+        ]}
+    ]
+  },
+  {
+    id: 'kitchen', icon: '🍳', title: '厨餐习惯', desc: '厨房是家的烟火气中心',
+    questions: [
+      { id: 'kitchen_type', type: 'choice', label: '厨房形式偏好', required: true,
+        options: [{ v:'open', l:'全开放式' },{ v:'semi', l:'半开放（岛台+玻璃隔断）' },
+          { v:'closed', l:'封闭式' },{ v:'flex', l:'看户型再定' }],
+        followUp: [
+          { match: ['open','semi'], id: 'cook_style', type: 'multi', label: '做饭习惯',
+            options: [{ v:'heavy_oil', l:'重油爆炒' },{ v:'light', l:'清淡少油' },
+              { v:'steam', l:'蒸煮为主' },{ v:'bake', l:'烘焙西餐' }]}
+        ]},
+      { id: 'kitchen_features', type: 'multi', label: '厨房需要哪些配置？（可多选）',
+        options: [{ v:'island', l:'中岛台' },{ v:'dishwasher', l:'洗碗机' },
+          { v:'steam_oven', l:'蒸烤箱' },{ v:'waste', l:'垃圾处理器' },
+          { v:'water', l:'净水系统' },{ v:'fridge_large', l:'大双门冰箱' },
+          { v:'kitchen_ac', l:'厨房空调' },{ v:'wine_cabinet', l:'恒温酒柜' }]},
+      { id: 'dine_count', type: 'choice', label: '日常用餐人数',
+        options: [{ v:'1-2', l:'1-2人' },{ v:'3-4', l:'3-4人' },
+          { v:'5-6', l:'5-6人' },{ v:'7+', l:'7人及以上' }]},
+      { id: 'dine_style', type: 'choice', label: '用餐方式偏好',
+        options: [{ v:'island_eat', l:'岛台简餐为主' },{ v:'table', l:'餐厅正桌' },
+          { v:'both', l:'岛台+餐桌都用' }]}
+    ]
+  },
+  {
+    id: 'smart', icon: '🤖', title: '智能与设备', desc: '科技让家更懂你',
+    questions: [
+      { id: 'smart_level', type: 'choice', label: '全屋智能程度', required: true,
+        options: [{ v:'full', l:'全屋深度智能（灯光/窗帘/温控/安防全联动）' },
+          { v:'partial', l:'部分智能（主要区域）' },
+          { v:'basic', l:'基础智能（开关/门锁/摄像头）' },
+          { v:'none', l:'暂不需要' }],
+        followUp: [
+          { match: ['full','partial','basic'], id: 'smart_sys', type: 'multi', label: '需要哪些智能系统？',
+            options: [{ v:'sm_light', l:'智能灯光' },{ v:'sm_curtain', l:'电动窗帘' },
+              { v:'sm_lock', l:'智能门锁' },{ v:'sm_camera', l:'安防监控' },
+              { v:'sm_thermo', l:'智能温控' },{ v:'sm_speak', l:'全屋语音控制' },
+              { v:'sm_scene', l:'场景模式一键切换' }]}
+        ]},
+      { id: 'hvac', type: 'choice', label: '空调方案', required: true,
+        options: [{ v:'central', l:'全屋中央空调' },{ v:'split', l:'客餐厅风管机+卧室挂机' },
+          { v:'wall', l:'全屋挂机/柜机' },{ v:'unsure', l:'不确定' }]},
+      { id: 'heating', type: 'choice', label: '采暖需求',
+        options: [{ v:'floor', l:'全屋地暖' },{ v:'radiator', l:'暖气片' },
+          { v:'none_heat', l:'不需要（南方）' },{ v:'unsure_heat', l:'不确定' }]},
+      { id: 'fresh_air', type: 'choice', label: '新风系统',
+        options: [{ v:'yes_fresh', l:'需要全屋新风' },{ v:'partial_fresh', l:'部分区域' },
+          { v:'maybe_fresh', l:'预埋管道以后再装' },{ v:'no_fresh', l:'不需要' }]},
+      { id: 'water_sys', type: 'multi', label: '净水需求（可多选）',
+        options: [{ v:'water_whole', l:'全屋净水/软水' },{ v:'water_drink', l:'直饮水/RO' },
+          { v:'water_warm', l:'即热管线机' }]}
+    ]
+  },
+  {
+    id: 'style', icon: '🎨', title: '风格偏好', desc: '你想要的家，长什么样？',
+    questions: [
+      { id: 'design_style', type: 'style', label: '整体风格倾向（可多选）', required: true,
+        options: [
+          { v:'modern', l:'现代简约', color:'#4A5568', desc:'线条干净，少即是多' },
+          { v:'new_chinese', l:'新中式', color:'#8B4513', desc:'东方韵味，现代演绎' },
+          { v:'french', l:'轻法式', color:'#C9A87C', desc:'浪漫优雅，柔和线条' },
+          { v:'wabi', l:'侘寂风', color:'#A0937D', desc:'自然质朴，不完美之美' },
+          { v:'cream', l:'奶油风', color:'#F5E6D3', desc:'温柔软糯，治愈感' },
+          { v:'japanese', l:'日式原木', color:'#D4A574', desc:'温暖木质，禅意宁静' },
+          { v:'mid_century', l:'中古风', color:'#B8860B', desc:'复古质感，经典耐看' },
+          { v:'industrial', l:'工业风', color:'#696969', desc:'裸露材质，个性十足' },
+          { v:'luxury', l:'现代轻奢', color:'#2F3943', desc:'精致高级，低调奢华' },
+          { v:'mix', l:'混搭', color:'#AE8555', desc:'不拘一格，我的风格' }
+        ]},
+      { id: 'tone', type: 'choice', label: '整体色调偏好',
+        options: [{ v:'light', l:'浅色明亮' },{ v:'warm', l:'温暖木质调' },
+          { v:'dark', l:'深色沉稳' },{ v:'colorful', l:'彩色活泼' },
+          { v:'neutral', l:'中性灰调' }]},
+      { id: 'floor_mat', type: 'multi', label: '地面材质偏好（可多选）',
+        options: [{ v:'f_wood', l:'木地板' },{ v:'f_tile', l:'瓷砖/大理石' },
+          { v:'f_micro', l:'微水泥自流平' },{ v:'f_carpet', l:'地毯（局部）' }]},
+      { id: 'vibe_words', type: 'text', label: '用3-5个词描述理想家的感觉', placeholder: '比如：温馨、通透、高级、安静、有设计感...' }
+    ]
+  },
+  {
+    id: 'fengshui', icon: '🔮', title: '风水讲究', desc: '有些传统，值得尊重',
+    questions: [
+      { id: 'fs_level', type: 'choice', label: '您对风水的在意程度', required: true,
+        options: [{ v:'fs_high', l:'很在意，装修要严格避讳' },
+          { v:'fs_moderate', l:'一般在意，基本讲究要有' },
+          { v:'fs_low', l:'不太在意，过得去就行' },
+          { v:'fs_no', l:'完全不在意' }],
+        followUp: [
+          { match: ['fs_high','fs_moderate'], id: 'fs_points', type: 'multi', label: '具体在意的风水点（可多选）',
+            options: [{ v:'fs_door', l:'大门不对厕所/厨房' },{ v:'fs_hall', l:'玄关聚气/穿堂煞' },
+              { v:'fs_bed', l:'床头朝向/横梁压顶' },{ v:'fs_stove', l:'炉灶不对水槽' },
+              { v:'fs_mirror', l:'镜子不对床/门' },{ v:'fs_wealth', l:'财位布置' },
+              { v:'fs_beam', l:'避免梁压沙发/床' },{ v:'fs_stair', l:'楼梯不对大门' }]},
+          { match: ['fs_high','fs_moderate'], id: 'fs_master', type: 'choice', label: '是否已请过风水师？',
+            options: [{ v:'fs_yes', l:'已请，有具体要求' },{ v:'fs_no', l:'还没请' },
+              { v:'fs_plan', l:'打算请' }]},
+          { match: 'fs_yes', id: 'fs_notes', type: 'text', label: '风水师的具体要求', placeholder: '简单说一下风水师提的要求...' }
+        ]},
+      { id: 'gods', type: 'choice', label: '是否需要设置神位/佛龛？',
+        options: [{ v:'yes_god', l:'需要' },{ v:'no_god', l:'不需要' }]}
+    ]
+  },
+  {
+    id: 'lifestyle', icon: '🧩', title: '生活方式', desc: '日常习惯决定家的样子',
+    questions: [
+      { id: 'storage', type: 'choice', label: '收纳习惯',
+        options: [{ v:'store_max', l:'极致收纳，东西全藏起来' },
+          { v:'store_show', l:'展示与收纳结合，好看的摆出来' },
+          { v:'store_free', l:'随意就好，不做太多柜子' }]},
+      { id: 'clean', type: 'choice', label: '清洁习惯',
+        options: [{ v:'clean_high', l:'有洁癖，每天打扫' },
+          { v:'clean_norm', l:'正常，隔几天收拾' },
+          { v:'clean_low', l:'懒人派，能少动手就少动手' }],
+        followUp: [
+          { match: 'clean_low', id: 'lazy_design', type: 'multi', label: '去家务化设计需求',
+            options: [{ v:'lz_bend', l:'不弯腰设计（洗衣机抬高/鞋柜悬空）' },
+              { v:'lz_sealed', l:'柜子全到顶/少开放格' },{ v:'lz_robot', l:'预留扫地机基站' },
+              { v:'lz_mess', l:'设立"容乱区"（随便堆）' },{ v:'lz_floor', l:'全屋通铺好打理' }]}
+        ]},
+      { id: 'wfh', type: 'choice', label: '居家办公频率',
+        options: [{ v:'wfh_full', l:'每天居家办公' },{ v:'wfh_part', l:'偶尔居家办公' },
+          { v:'wfh_no', l:'不在家办公' }]},
+      { id: 'party', type: 'choice', label: '在家聚会/招待频率',
+        options: [{ v:'party_often', l:'经常，每月多次' },{ v:'party_some', l:'偶尔，节假日' },
+          { v:'party_rare', l:'很少' }]},
+      { id: 'sleep_habit', type: 'multi', label: '睡眠相关需求（可多选）',
+        options: [{ v:'sleep_dark', l:'全遮光窗帘' },{ v:'sleep_quiet', l:'极致静音' },
+          { v:'sleep_smart', l:'智能床/升降床' },{ v:'sleep_light', l:'柔光起夜灯' }]},
+      { id: 'hobby', type: 'multi', label: '特殊兴趣爱好（可多选）',
+        options: [{ v:'hb_music', l:'乐器/音乐' },{ v:'hb_collect', l:'收藏/手办/潮玩' },
+          { v:'hb_plant', l:'园艺/绿植' },{ v:'hb_reading', l:'阅读' },
+          { v:'hb_game', l:'游戏' },{ v:'hb_craft', l:'手工/DIY' },
+          { v:'hb_yoga', l:'瑜伽/冥想' },{ v:'hb_cook', l:'烹饪/烘焙' }],
+        followUp: [
+          { match: 'hb_music', id: 'music_detail', type: 'multi', label: '音乐相关需求',
+            options: [{ v:'mu_sound', l:'隔音处理' },{ v:'mu_piano', l:'钢琴/乐器位' },
+              { v:'mu_system', l:'音响系统布线' }]},
+          { match: 'hb_collect', id: 'collect_detail', type: 'multi', label: '收藏展示需求',
+            options: [{ v:'co_cabinet', l:'展示柜/玻璃柜' },{ v:'co_wall', l:'整面展示墙' },
+              { v:'co_light', l:'专用展示灯光' }]}
+        ]}
+    ]
+  },
+  {
+    id: 'budget', icon: '💰', title: '投入预期', desc: '最后一件事——预算',
+    questions: [
+      { id: 'total_budget', type: 'slider', label: '装修总投入预算',
+        min: 5, max: 200, step: 5, unit: '万', default: 30,
+        marks: ['5万','30万','60万','100万','150万','200万'] },
+      { id: 'budget_include', type: 'multi', label: '预算包含哪些？（可多选）', required: true,
+        options: [{ v:'bi_hard', l:'硬装施工' },{ v:'bi_soft', l:'软装家具' },
+          { v:'bi_app', l:'家电设备' },{ v:'bi_design', l:'设计费' },
+          { v:'bi_smart', l:'智能系统' }]},
+      { id: 'budget_focus', type: 'choice', label: '你更愿意把钱花在哪？', required: true,
+        options: [{ v:'focus_hard', l:'硬装品质（隐蔽工程/材料）' },
+          { v:'focus_soft', l:'软装效果（家具/装饰）' },
+          { v:'focus_both', l:'均衡分配' },
+          { v:'focus_smart', l:'智能与科技' }]}
+    ]
+  }
+];
+
+// ============ State ============
+let currentSection = 0;
+let answers = {};
+
+// ============ Init ============
+function init() {
+  buildDots();
+  renderSection(0);
+}
+
+function buildDots() {
+  const dots = document.getElementById('sectionDots');
+  dots.innerHTML = sections.map((s,i) =>
+    `<div class="dot" data-idx="${i}" onclick="goToSection(${i})"></div>`
+  ).join('');
+}
+
+function updateDots() {
+  document.querySelectorAll('.dot').forEach((d,i) => {
+    d.className = 'dot';
+    if (i < currentSection) d.classList.add('done');
+    if (i === currentSection) d.classList.add('active');
+  });
+}
+
+function updateProgress() {
+  const pct = Math.round((currentSection / (sections.length - 1)) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${currentSection+1}/${sections.length}`;
+}
+
+// ============ Render ============
+function renderSection(idx) {
+  currentSection = idx;
+  const sec = sections[idx];
+  const main = document.getElementById('main');
+
+  let html = `<div class="section-wrap active" id="sec-${idx}">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-icon">${sec.icon}</div>
+        <div class="section-title">${sec.title}</div>
+      </div>
+      <div class="section-desc">${sec.desc}</div>`;
+
+  sec.questions.forEach((q, qi) => {
+    html += renderQuestion(q, qi, idx);
+  });
+
+  html += `<div class="nav-buttons">
+    ${idx > 0 ? `<button class="btn btn-prev" onclick="goToSection(${idx-1})">← 上一项</button>` : ''}
+    ${idx < sections.length - 1
+      ? `<button class="btn btn-next" onclick="nextSection()">下一项 →</button>`
+      : `<button class="btn btn-submit" onclick="submit()">✓ 生成需求报告</button>`}
+  </div></div></div>`;
+
+  main.innerHTML = html;
+  restoreAnswers(idx);
+  updateDots();
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+function renderQuestion(q, qi, secIdx) {
+  const val = answers[q.id] || '';
+  const requiredTag = q.required ? '<span class="q-required">*必填</span>' : '';
+
+  let html = `<div class="q-block"><div class="q-label">${q.label} ${requiredTag}</div>`;
+
+  if (q.type === 'choice') {
+    html += `<div class="opt-grid col1">`;
+    q.options.forEach(o => {
+      const checked = (val === o.v) ? 'checked' : '';
+      html += `<label class="opt-item">
+        <input type="radio" name="${q.id}" value="${o.v}" ${checked} onchange="onChange('${q.id}','${o.v}',${secIdx},${qi})">
+        <span class="opt-label">${o.l}</span></label>`;
+    });
+    html += `</div>`;
+  }
+
+  else if (q.type === 'multi') {
+    html += `<div class="opt-grid col1">`;
+    const vals = Array.isArray(val) ? val : [];
+    q.options.forEach(o => {
+      const checked = vals.includes(o.v) ? 'checked' : '';
+      html += `<label class="opt-item">
+        <input type="checkbox" value="${o.v}" ${checked} onchange="onMultiChange('${q.id}','${o.v}',this,${secIdx},${qi})">
+        <span class="opt-label">${o.l}</span></label>`;
+    });
+    html += `</div>`;
+  }
+
+  else if (q.type === 'style') {
+    html += `<div class="style-grid">`;
+    const vals = Array.isArray(val) ? val : [];
+    q.options.forEach(o => {
+      const checked = vals.includes(o.v) ? 'checked' : '';
+      html += `<label class="style-card">
+        <input type="checkbox" value="${o.v}" ${checked} onchange="onMultiChange('${q.id}','${o.v}',this,${secIdx},${qi})">
+        <div class="style-card-inner">
+          <div class="style-preview" style="background:linear-gradient(135deg, ${o.color}40, ${o.color}90)">${o.l}</div>
+          <div class="style-name">${o.desc || ''}</div>
+        </div></label>`;
+    });
+    html += `</div>`;
+  }
+
+  else if (q.type === 'slider') {
+    const curVal = val || q.default;
+    html += `<div class="budget-slider-wrap">
+      <div class="budget-value">${curVal}<span> ${q.unit}</span></div>
+      <input type="range" class="budget-slider" min="${q.min}" max="${q.max}" step="${q.step}" value="${curVal}"
+        oninput="onSliderChange('${q.id}', this.value, '${q.unit}')">
+      <div class="budget-marks">${(q.marks||[]).map(m=>`<span>${m}</span>`).join('')}</div></div>`;
+  }
+
+  else if (q.type === 'text') {
+    html += `<input type="text" class="text-input" id="input-${q.id}" placeholder="${q.placeholder||''}"
+      value="${val}" oninput="onTextChange('${q.id}', this.value)">`;
+  }
+
+  // Follow-ups
+  if (q.followUp) {
+    q.followUp.forEach(fu => {
+      html += `<div class="follow-up" id="fu-${fu.id}">`;
+      html += `<div class="q-label">${fu.label}</div>`;
+      if (fu.type === 'multi') {
+        const fuVals = Array.isArray(answers[fu.id]) ? answers[fu.id] : [];
+        fu.options.forEach(o => {
+          const checked = fuVals.includes(o.v) ? 'checked' : '';
+          html += `<label class="opt-item" style="display:inline-block;margin:0 6px 6px 0;">
+            <input type="checkbox" value="${o.v}" ${checked} onchange="onFuMultiChange('${fu.id}','${o.v}',this)">
+            <span class="opt-label" style="font-size:13px;padding:8px 12px;">${o.l}</span></label>`;
+        });
+      } else if (fu.type === 'choice') {
+        fu.options.forEach(o => {
+          const checked = (answers[fu.id] === o.v) ? 'checked' : '';
+          html += `<label class="opt-item" style="display:inline-block;margin:0 6px 6px 0;">
+            <input type="radio" name="${fu.id}" value="${o.v}" ${checked} onchange="onFuChange('${fu.id}','${o.v}')">
+            <span class="opt-label" style="font-size:13px;padding:8px 12px;">${o.l}</span></label>`;
+        });
+      } else if (fu.type === 'text') {
+        html += `<input type="text" class="text-input" id="input-${fu.id}" placeholder="${fu.placeholder||''}"
+          value="${answers[fu.id]||''}" oninput="onTextChange('${fu.id}', this.value)">`;
+      }
+      html += `</div>`;
+    });
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ============ Answer Handlers ============
+function onChange(id, value, secIdx, qi) {
+  answers[id] = value;
+  updateFollowUps(secIdx, qi);
+  checkAndShowFollowUps();
+}
+
+function onMultiChange(id, value, el, secIdx, qi) {
+  if (!Array.isArray(answers[id])) answers[id] = [];
+  if (el.checked) {
+    if (!answers[id].includes(value)) answers[id].push(value);
+  } else {
+    answers[id] = answers[id].filter(v => v !== value);
+  }
+  if (value === 'none' && el.checked) {
+    answers[id] = ['none'];
+    setTimeout(() => refreshSection(secIdx), 50);
+  }
+  updateFollowUps(secIdx, qi);
+  checkAndShowFollowUps();
+}
+
+function onFuChange(id, value) {
+  answers[id] = value;
+  const sec = sections[currentSection];
+  sec.questions.forEach((q,qi) => {
+    if (q.followUp) {
+      q.followUp.forEach(fu => {
+        if (fu.id === id && fu.type === 'choice' && fu.match && typeof fu.match === 'string' && fu.match === value) {
+          const nested = q.followUp.filter(f => f.match === value);
+          nested.forEach(nf => {
+            const el = document.getElementById('fu-'+nf.id);
+            if (el) el.classList.add('show');
+          });
+        }
+      });
+    }
+  });
+}
+
+function onFuMultiChange(id, value, el) {
+  if (!Array.isArray(answers[id])) answers[id] = [];
+  if (el.checked) {
+    if (!answers[id].includes(value)) answers[id].push(value);
+  } else {
+    answers[id] = answers[id].filter(v => v !== value);
+  }
+}
+
+function onSliderChange(id, value, unit) {
+  answers[id] = value;
+  const parent = document.getElementById('main');
+  const valEl = parent.querySelector('.budget-value');
+  if (valEl) valEl.innerHTML = `${value}<span> ${unit}</span>`;
+}
+
+function onTextChange(id, value) {
+  answers[id] = value;
+}
+
+function updateFollowUps(secIdx, qi) {
+  const sec = sections[secIdx];
+  const q = sec.questions[qi];
+  if (!q.followUp) return;
+
+  setTimeout(() => {
+    q.followUp.forEach(fu => {
+      const el = document.getElementById('fu-'+fu.id);
+      if (!el) return;
+
+      let shouldShow = false;
+      const val = answers[q.id];
+
+      if (fu.match) {
+        if (typeof fu.match === 'string') {
+          if (Array.isArray(val)) shouldShow = val.includes(fu.match);
+          else shouldShow = (val === fu.match);
+        } else if (Array.isArray(fu.match)) {
+          if (Array.isArray(val)) shouldShow = val.some(v => fu.match.includes(v));
+          else shouldShow = fu.match.includes(val);
+        }
+      }
+
+      el.classList.toggle('show', shouldShow);
+    });
+  }, 50);
+}
+
+function checkAndShowFollowUps() {
+  const sec = sections[currentSection];
+  sec.questions.forEach((q, qi) => {
+    if (!q.followUp) return;
+    q.followUp.forEach(fu => {
+      if (!fu.match) return;
+      const el = document.getElementById('fu-'+fu.id);
+      if (!el) return;
+      const val = answers[q.id];
+      let shouldShow = false;
+      if (typeof fu.match === 'string') {
+        if (Array.isArray(val)) shouldShow = val.includes(fu.match);
+        else shouldShow = (val === fu.match);
+      } else if (Array.isArray(fu.match)) {
+        if (Array.isArray(val)) shouldShow = val.some(v => fu.match.includes(v));
+        else shouldShow = fu.match.includes(val);
+      }
+      el.classList.toggle('show', shouldShow);
+    });
+  });
+}
+
+function restoreAnswers(idx) {
+  setTimeout(() => {
+    const sec = sections[idx];
+    sec.questions.forEach((q, qi) => {
+      updateFollowUps(idx, qi);
+    });
+  }, 100);
+}
+
+// ============ Navigation ============
+function goToSection(idx) {
+  if (idx <= currentSection || isSectionComplete(idx-1)) {
+    renderSection(idx);
+  } else {
+    showToast('请先完成当前步骤');
+  }
+}
+
+function nextSection() {
+  if (!isSectionComplete(currentSection)) {
+    showToast('请填写必填项后再继续');
+    return;
+  }
+  if (currentSection < sections.length - 1) {
+    renderSection(currentSection + 1);
+  }
+}
+
+function refreshSection(idx) {
+  const answersCopy = {...answers};
+  renderSection(idx);
+  answers = answersCopy;
+  restoreAnswers(idx);
+}
+
+function isSectionComplete(idx) {
+  const sec = sections[idx];
+  for (const q of sec.questions) {
+    if (q.required) {
+      const val = answers[q.id];
+      if (!val || (typeof val === 'string' && !val.trim()) || (Array.isArray(val) && val.length === 0)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============ Submit & Report ============
+function submit() {
+  if (!isSectionComplete(currentSection)) {
+    showToast('请填写必填项后再提交');
+    return;
+  }
+  // Store in sessionStorage for report page
+  sessionStorage.setItem('survey_answers', JSON.stringify(answers));
+  window.location.href = 'report.html';
+}
+
+// ============ Start ============
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

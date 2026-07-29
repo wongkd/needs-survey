@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>表里如一 · 需求分析报告</title>
+<style>
+:root {
+  --gold: #AE8555; --gold-light: #C9A87C; --gold-bg: #F5EDE3;
+  --dark: #2F3943; --dark-light: #4A5568;
+  --bg: #F7F4F0; --card: #FFFFFF; --border: #E8E3DC;
+  --text: #2F3943; --text-light: #718096;
+  --green: #38A169; --blue: #3182CE; --red: #E53E3E;
+  --shadow: 0 2px 16px rgba(47,57,67,0.06);
+  --radius: 16px; --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Cover */
+.cover {
+  background: linear-gradient(160deg, var(--dark) 0%, #1a2330 100%);
+  color: #fff; padding: 50px 24px 40px; text-align: center;
+  position: relative; overflow: hidden;
+}
+
+.cover::after {
+  content: ''; position: absolute; bottom: -30px; left: -30px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(174,133,85,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.cover-badge {
+  display: inline-block; padding: 6px 16px;
+  background: rgba(174,133,85,0.2); border: 1px solid rgba(174,133,85,0.4);
+  border-radius: 20px; font-size: 12px; letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.cover h1 {
+  font-size: 24px; font-weight: 700; margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.cover .subtitle {
+  font-size: 13px; opacity: 0.6; margin-bottom: 24px;
+}
+
+.cover-meta {
+  display: flex; justify-content: center; gap: 32px;
+  font-size: 12px; opacity: 0.7;
+}
+
+/* Container */
+.container {
+  max-width: 640px; margin: 0 auto; padding: 20px;
+}
+
+/* Summary card */
+.summary-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 24px 20px; margin-bottom: 20px;
+}
+
+.summary-card h3 {
+  font-size: 16px; color: var(--gold); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.summary-card h3::before {
+  content: ''; width: 4px; height: 18px; background: var(--gold);
+  border-radius: 2px; display: inline-block;
+}
+
+/* Insight box */
+.insight {
+  background: linear-gradient(135deg, var(--gold-bg), #FDF6EE);
+  border-radius: var(--radius-sm); padding: 16px; margin: 16px 0;
+  border-left: 3px solid var(--gold);
+}
+
+.insight-title {
+  font-size: 13px; font-weight: 700; color: var(--gold);
+  margin-bottom: 4px; letter-spacing: 1px;
+}
+
+.insight-text {
+  font-size: 14px; color: var(--dark); line-height: 1.8;
+}
+
+/* Space blocks */
+.space-block {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden;
+}
+
+.space-header {
+  padding: 16px 20px; background: var(--dark);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.space-header .icon { font-size: 22px; }
+.space-header .name {
+  font-size: 15px; font-weight: 600; color: #fff;
+}
+
+.space-body { padding: 16px 20px; }
+
+.need-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.need-item:last-child { border-bottom: none; }
+
+.need-badge {
+  flex-shrink: 0; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.need-badge.need { background: #FEF3C7; color: #92400E; }
+.need-badge.design { background: #DBEAFE; color: #1E40AF; }
+.need-badge.warn { background: #FEE2E2; color: #991B1B; }
+
+/* Budget bar */
+.budget-bar-wrap {
+  background: var(--bg); border-radius: 8px; height: 12px;
+  margin: 12px 0; overflow: hidden; display: flex;
+}
+
+.budget-bar-wrap .seg {
+  height: 100%; transition: width 0.5s;
+}
+
+.budget-legend {
+  display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px;
+  color: var(--text-light);
+}
+
+.budget-legend span { display: flex; align-items: center; gap: 4px; }
+.budget-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+/* Footer */
+.footer {
+  text-align: center; padding: 24px 20px 40px; color: var(--text-light);
+  font-size: 13px;
+}
+
+.footer-cta {
+  display: inline-block; margin-top: 12px; padding: 12px 30px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #fff; border-radius: 24px; font-size: 14px; font-weight: 600;
+  text-decoration: none; letter-spacing: 0.5px;
+}
+
+/* Tag cloud */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  padding: 4px 12px; background: var(--bg); border-radius: 12px;
+  font-size: 12px; color: var(--dark-light);
+}
+.tag.highlight { background: var(--gold-bg); color: var(--gold); font-weight: 600; }
+
+/* Empty state */
+.empty-hint {
+  text-align: center; padding: 40px; color: var(--text-light);
+}
+.empty-hint button {
+  margin-top: 16px; padding: 12px 30px;
+  background: var(--dark); color: #fff; border: none;
+  border-radius: 24px; font-size: 14px; cursor: pointer;
+}
+
+/* Actions */
+.actions {
+  display: flex; gap: 10px; padding: 0 20px 20px; justify-content: center;
+}
+
+.btn {
+  padding: 10px 24px; border-radius: 20px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: none; transition: 0.2s;
+}
+
+.btn-outline {
+  background: #fff; border: 1.5px solid var(--gold); color: var(--gold);
+}
+
+.btn-primary {
+  background: var(--dark); color: #fff;
+}
+
+.btn:active { transform: scale(0.96); }
+
+@media print {
+  body { background: #fff; }
+  .actions, .footer-cta { display: none; }
+  .cover { background: var(--dark) !important; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div id="report"></div>
+
+<script>
+// ============ Label Maps ============
+const LABELS = {
+  area: {'60-':'60㎡以下','60-90':'60-90㎡','90-120':'90-120㎡','120-160':'120-160㎡','160-200':'160-200㎡','200+':'200㎡以上'},
+  layout: {'1br':'一居室','2br':'两居室','3br':'三居室','4br+':'四居室及以上','loft':'复式/LOFT','villa':'别墅'},
+  floor: {'low':'低层(1-6楼)','mid':'中��(7-15楼)','high':'高层(16楼+)','any':'无所谓'},
+  facing: {'south':'朝南','north':'朝北','east':'朝东','west':'朝西','ns':'南北通透','na':'暂不清楚'},
+  status: {'rough':'毛坯新房','old':'旧房全翻','partial':'局部改造','fine':'精装微改'},
+  count: {'1':'1人独居','2':'2人','3':'3人','4':'4人','5+':'5人及以上'},
+  members: {'couple':'夫妻/伴侣','child_young':'婴幼儿','child_school':'学龄儿童','teen':'青少年','elder':'长辈/老人','single':'单身'},
+  future: {'stable':'基本不变','newborn':'计划要孩子','parent_in':'父母可能搬来住','child_out':'孩子可能离家','other_change':'其他变化'},
+  pets: {'dog':'狗','cat':'猫','fish':'鱼/水族','bird':'鸟','other_pet':'其他宠物','none':'不养宠物'},
+  dog_breed: {'small':'小型犬','medium':'中型犬','large':'大型犬'},
+  cat_count: {'1':'1只','2':'2只','3+':'3只及以上'},
+  pet_space: {'pet_bath':'宠物洗澡区','pet_door':'宠物门/任意门','pet_feed':'固定喂食区','pet_climb':'爬架/活动区'},
+  cat_space: {'cat_wall':'墙面猫道/空中走廊','cat_window':'窗台猫窝','cat_litter':'隐藏式猫砂区','cat_tree':'大型猫爬架'},
+  elder_live: {'yes_full':'长期同住','yes_part':'偶尔来住','no':'不同住'},
+  elder_needs: {'elder_no_step':'全屋无高差/无门槛','elder_rail':'扶手/安全抓杆','elder_light':'起夜感应灯','elder_bath':'无障碍卫生间','elder_bed':'适老化卧室','elder_lift':'家用电梯/升降椅'},
+  has_kids: {'yes_baby':'有婴幼儿','yes_kid':'有学龄儿童','yes_teen':'有青少年','no':'没有'},
+  kid_needs: {'kid_room':'独立儿童房','kid_play':'专属游戏区','kid_study':'学习区/书桌','kid_safe':'安全防撞设计','kid_low':'儿童身高适配家具','kid_store':'玩具收纳'},
+  rooms: {'esports':'电竞房','study':'书房','home_theater':'家庭影音','gym':'健身区','tea':'茶室','bar':'调酒吧台','walkin':'独立衣帽间','suite':'主卧套间','guest':'客房','laundry':'家政间','storage':'储物间','garden':'阳台花园'},
+  esports_detail: {'es_sound':'隔音处理','es_rgb':'RGB氛围灯光','es_multi':'双人/多人位','es_cool':'独立空调散热','es_display':'手办展示柜','es_stream':'直播设备区'},
+  study_detail: {'st_quiet':'绝对安静隔音','st_books':'大量藏书书架','st_double':'双人办公位','st_relax':'阅读休闲角'},
+  theater_detail: {'th_projector':'投影+幕布','th_tv':'大屏电视','th_sound':'专业隔音','th_karaoke':'K歌功能'},
+  suite_detail: {'su_bath':'独立卫浴','su_closet':'步入式衣帽间','su_balcony':'独立阳台','su_sit':'起居区/小客厅'},
+  kitchen_type: {'open':'全开放式','semi':'半开放（岛台+玻璃隔断）','closed':'封闭式','flex':'看户型再定'},
+  cook_style: {'heavy_oil':'重油爆炒','light':'清淡少油','steam':'蒸煮为主','bake':'烘焙西餐'},
+  kitchen_features: {'island':'中岛台','dishwasher':'洗碗机','steam_oven':'蒸烤箱','waste':'垃圾处理器','water':'净水系统','fridge_large':'大双门冰箱','kitchen_ac':'厨房空调','wine_cabinet':'恒温酒柜'},
+  dine_count: {'1-2':'1-2人','3-4':'3-4人','5-6':'5-6人','7+':'7人及以上'},
+  dine_style: {'island_eat':'岛台简餐为主','table':'餐厅正桌','both':'岛台+餐桌都用'},
+  smart_level: {'full':'全屋深度智能','partial':'部分智能','basic':'基础智能','none':'暂不需要'},
+  smart_sys: {'sm_light':'智能灯光','sm_curtain':'电动窗帘','sm_lock':'智能门锁','sm_camera':'安防监控','sm_thermo':'智能温控','sm_speak':'全屋语音控制','sm_scene':'场景模式一键切换'},
+  hvac: {'central':'全屋中央空调','split':'客餐厅风管机+卧室挂机','wall':'全屋挂机/柜机','unsure':'不确定'},
+  heating: {'floor':'全屋地暖','radiator':'暖气片','none_heat':'不需要','unsure_heat':'不确定'},
+  fresh_air: {'yes_fresh':'需要全屋新风','partial_fresh':'部分区域','maybe_fresh':'预埋管道以后再装','no_fresh':'不需要'},
+  water_sys: {'water_whole':'全屋净水/软水','water_drink':'直饮水/RO','water_warm':'即热管线机'},
+  design_style: {'modern':'现代简约','new_chinese':'新中式','french':'轻法式','wabi':'侘寂风','cream':'奶油风','japanese':'日式原木','mid_century':'中古风','industrial':'工业风','luxury':'现代轻奢','mix':'混搭'},
+  tone: {'light':'浅色明亮','warm':'温暖木质调','dark':'深色沉稳','colorful':'彩色活泼','neutral':'中性灰调'},
+  floor_mat: {'f_wood':'木地板','f_tile':'瓷砖/大理石','f_micro':'微水泥自流平','f_carpet':'地毯（局部）'},
+  fs_level: {'fs_high':'很在意，严格避讳','fs_moderate':'一般在意，基本讲究有','fs_low':'不太在意','fs_no':'完全不在意'},
+  fs_points: {'fs_door':'大门不对厕所/厨房','fs_hall':'玄关聚气/穿堂煞','fs_bed':'床头朝向/横梁压顶','fs_stove':'炉灶不对水槽','fs_mirror':'镜子不对床/门','fs_wealth':'财位布置','fs_beam':'避免梁压沙发/床','fs_stair':'楼梯不对大门'},
+  fs_master: {'fs_yes':'已请风水师','fs_no':'还没请','fs_plan':'打算请'},
+  gods: {'yes_god':'需要设置神位/佛龛','no_god':'不需要'},
+  storage: {'store_max':'极致收纳，全藏起来','store_show':'展示与收纳结合','store_free':'随意，不做太多柜子'},
+  clean: {'clean_high':'有洁癖，每天打扫','clean_norm':'正常频率','clean_low':'懒人派，少动手'},
+  lazy_design: {'lz_bend':'不弯腰设计','lz_sealed':'柜子到顶/少开放格','lz_robot':'预留扫地机基站','lz_mess':'容乱区','lz_floor':'全屋通铺好打理'},
+  wfh: {'wfh_full':'每天居家办公','wfh_part':'偶尔居家办公','wfh_no':'不在家办公'},
+  party: {'party_often':'经常聚会','party_some':'偶尔聚会','party_rare':'很少聚会'},
+  sleep_habit: {'sleep_dark':'全遮光窗帘','sleep_quiet':'极致静音','sleep_smart':'智能床','sleep_light':'柔光起夜灯'},
+  hobby: {'hb_music':'乐器/音乐','hb_collect':'收藏/手办/潮玩','hb_plant':'园艺/绿植','hb_reading':'阅读','hb_game':'游戏','hb_craft':'手工/DIY','hb_yoga':'瑜伽/冥想','hb_cook':'烹饪/烘焙'},
+  music_detail: {'mu_sound':'隔音处理','mu_piano':'钢琴/乐器位','mu_system':'音响系统布线'},
+  collect_detail: {'co_cabinet':'展示柜/玻璃柜','co_wall':'整面展示墙','co_light':'专用展示灯光'},
+  budget_include: {'bi_hard':'硬装施工','bi_soft':'软装家具','bi_app':'家电设备','bi_design':'设计费','bi_smart':'智能系统'},
+  budget_focus: {'focus_hard':'硬装品质优先','focus_soft':'软装效果优先','focus_both':'均衡分配','focus_smart':'智能与科技优先'}
+};
+
+function label(id, val) {
+  if (!val) return '';
+  if (Array.isArray(val)) return val.map(v => LABELS[id]?.[v] || v).join('、');
+  return LABELS[id]?.[val] || val;
+}
+
+function has(answers, id, val) {
+  const v = answers[id];
+  if (!v) return false;
+  if (Array.isArray(v)) return v.includes(val);
+  return v === val;
+}
+
+function hasAny(answers, id, vals) {
+  const v = answers[id];
+  if (!v) return false;
+  if (Array.isArray(v)) return v.some(x => vals.includes(x));
+  return vals.includes(v);
+}
+
+// ============ Build Report ============
+function buildReport(a) {
+  const budget = parseInt(a.total_budget) || 30;
+  const areaKey = a.area || '';
+  const areaNum = areaKey === '60-' ? 50 : areaKey === '60-90' ? 75 : areaKey === '90-120' ? 105 :
+    areaKey === '120-160' ? 140 : areaKey === '160-200' ? 180 : areaKey === '200+' ? 220 : 100;
+
+  // Budget estimate per sqm
+  const budgetPerSqm = Math.round((budget * 10000) / areaNum);
+
+  let html = '';
+
+  // ===== COVER =====
+  html += `<div class="cover">
+    <div class="cover-badge">TABLE SURFACE · 客户需求分析报告</div>
+    <h1>需求画像 & 设计归纳</h1>
+    <div class="subtitle">广东表里如一工程有限公司</div>
+    <div class="cover-meta">
+      <span>面积 ${label('area', a.area)}</span>
+      <span>预算 ${budget}万</span>
+      <span>${new Date().toLocaleDateString('zh-CN')}</span>
+    </div>
+  </div>`;
+
+  html += `<div class="container">`;
+
+  // ===== 1. 需求画像 =====
+  html += `<div class="summary-card">
+    <h3>📋 需求画像</h3>`;
+
+  const profile = buildProfile(a, budget, areaNum);
+  html += `<div class="insight">
+    <div class="insight-title">一句话画像</div>
+    <div class="insight-text">${profile.oneLiner}</div>
+  </div>`;
+
+  // Key data tags
+  html += `<div class="tag-cloud" style="margin-top:12px">`;
+  profile.tags.forEach(t => {
+    html += `<span class="tag highlight">${t}</span>`;
+  });
+  html += `</div></div>`;
+
+  // ===== 2. 空间需求翻译 =====
+  html += `<div class="summary-card">
+    <h3>🏗️ 空间需求翻译（设计师用）</h3>`;
+
+  // Core spaces from rooms
+  const roomNeeds = buildRoomNeeds(a);
+  roomNeeds.forEach(r => {
+    html += `<div class="space-block">
+      <div class="space-header">
+        <span class="icon">${r.icon}</span>
+        <span class="name">${r.name}</span>
+      </div>
+      <div class="space-body">
+        ${r.items.map(i => `<div class="need-item">
+          <span class="need-badge ${i.type}">${i.badge}</span>
+          <span>${i.text}</span>
+        </div>`).join('')}
+      </div></div>`;
+  });
+
+  if (roomNeeds.length === 0) {
+    html += `<div class="empty-hint"><p>未选择特定功能空间，设计师可根据基础信息灵活规划</p></div>`;
+  }
+
+  html += `</div>`;
+
+  // ===== 3. 风格与氛围 =====
+  html += `<div class="summary-card">
+    <h3>🎨 风格与氛围</h3>`;
+
+  const styleInfo = buildStyleInfo(a);
+  html += `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">`;
+  styleInfo.styles.forEach(s => {
+    html += `<span class="tag highlight">${s}</span>`;
+  });
+  html += `</div>`;
+
+  if (a.tone) {
+    html += `<div class="need-item">
+      <span class="need-badge design">色调</span>
+      <span>${label('tone', a.tone)}</span>
+    </div>`;
+  }
+  if (a.floor_mat) {
+    html += `<div class="need-item">
+      <span class="need-badge design">地面</span>
+      <span>${label('floor_mat', a.floor_mat)}</span>
+    </div>`;
+  }
+  if (a.vibe_words) {
+    html += `<div class="need-item">
+      <span class="need-badge design">氛围词</span>
+      <span>${a.vibe_words}</span>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // ===== 4. 厨餐与智能 =====
+  html += `<div class="summary-card">
+    <h3>🍳 厨餐 · 🤖 智能 · 🌿 环境</h3>`;
+
+  // Kitchen
+  if (a.kitchen_type) {
+    html += `<div class="need-item">
+      <span class="need-badge need">厨房</span>
+      <span>${label('kitchen_type', a.kitchen_type)}${a.kitchen_features ? ' · ' + label('kitchen_features', a.kitchen_features) : ''}</span>
+    </div>`;
+  }
+  if (a.cook_style) {
+    html += `<div class="need-item">
+      <span class="need-badge warn">注意</span>
+      <span>烹饪习惯：${label('cook_style', a.cook_style)}${has(a, 'cook_style', 'heavy_oil') ? ' → 需强排烟系统' : ''}</span>
+    </div>`;
+  }
+  if (a.dine_count) {
+    html += `<div class="need-item">
+      <span class="need-badge need">用餐</span>
+      <span>日常${label('dine_count', a.dine_count)}，${label('dine_style', a.dine_style)}</span>
+    </div>`;
+  }
+
+  // Smart
+  if (a.smart_level && a.smart_level !== 'none') {
+    html += `<div class="need-item">
+      <span class="need-badge need">智能</span>
+      <span>${label('smart_level', a.smart_level)}${a.smart_sys ? ' · ' + label('smart_sys', a.smart_sys) : ''}</span>
+    </div>`;
+  }
+
+  // HVAC
+  const envItems = [];
+  if (a.hvac) envItems.push(`空调：${label('hvac', a.hvac)}`);
+  if (a.heating && a.heating !== 'none_heat' && a.heating !== 'unsure_heat') envItems.push(`采暖：${label('heating', a.heating)}`);
+  if (a.fresh_air && a.fresh_air !== 'no_fresh') envItems.push(`新风：${label('fresh_air', a.fresh_air)}`);
+  if (a.water_sys) envItems.push(`净水：${label('water_sys', a.water_sys)}`);
+  if (envItems.length > 0) {
+    html += `<div class="need-item">
+      <span class="need-badge need">环境</span>
+      <span>${envItems.join(' · ')}</span>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // ===== 5. 生活习惯与特殊需求 =====
+  html += `<div class="summary-card">
+    <h3>🧩 生活习惯与特殊需求</h3>`;
+
+  // Members - pets/elder/kids
+  if (a.pets && !has(a, 'pets', 'none')) {
+    html += `<div class="need-item">
+      <span class="need-badge need">宠物</span>
+      <span>${label('pets', a.pets)}${a.dog_breed ? '（'+label('dog_breed', a.dog_breed)+'）' : ''}${a.cat_count ? '（'+label('cat_count', a.cat_count)+'）' : ''}
+      ${a.pet_space ? ' · 需求：'+label('pet_space', a.pet_space) : ''}
+      ${a.cat_space ? ' · '+label('cat_space', a.cat_space) : ''}</span>
+    </div>`;
+  }
+
+  if (a.elder_live && a.elder_live !== 'no') {
+    html += `<div class="need-item">
+      <span class="need-badge need">老人</span>
+      <span>${label('elder_live', a.elder_live)}${a.elder_needs ? ' · 需求：'+label('elder_needs', a.elder_needs) : ''}</span>
+    </div>`;
+  }
+
+  if (a.has_kids && a.has_kids !== 'no') {
+    html += `<div class="need-item">
+      <span class="need-badge need">儿童</span>
+      <span>${label('has_kids', a.has_kids)}${a.kid_needs ? ' · 需求：'+label('kid_needs', a.kid_needs) : ''}</span>
+    </div>`;
+  }
+
+  // Lifestyle
+  if (a.storage) {
+    html += `<div class="need-item">
+      <span class="need-badge design">收纳</span>
+      <span>${label('storage', a.storage)}</span>
+    </div>`;
+  }
+  if (a.clean) {
+    html += `<div class="need-item">
+      <span class="need-badge design">清洁</span>
+      <span>${label('clean', a.clean)}${a.lazy_design ? ' · 去家务化：'+label('lazy_design', a.lazy_design) : ''}</span>
+    </div>`;
+  }
+  if (a.wfh && a.wfh !== 'wfh_no') {
+    html += `<div class="need-item">
+      <span class="need-badge need">办公</span>
+      <span>${label('wfh', a.wfh)}</span>
+    </div>`;
+  }
+  if (a.party && a.party !== 'party_rare') {
+    html += `<div class="need-item">
+      <span class="need-badge need">社交</span>
+      <span>${label('party', a.party)}</span>
+    </div>`;
+  }
+  if (a.sleep_habit) {
+    html += `<div class="need-item">
+      <span class="need-badge need">睡眠</span>
+      <span>${label('sleep_habit', a.sleep_habit)}</span>
+    </div>`;
+  }
+  if (a.hobby) {
+    html += `<div class="need-item">
+      <span class="need-badge need">兴趣</span>
+      <span>${label('hobby', a.hobby)}${a.music_detail ? ' · '+label('music_detail', a.music_detail) : ''}${a.collect_detail ? ' · '+label('collect_detail', a.collect_detail) : ''}</span>
+    </div>`;
+  }
+
+  // Fengshui
+  if (a.fs_level && a.fs_level !== 'fs_no') {
+    html += `<div class="need-item">
+      <span class="need-badge warn">风水</span>
+      <span>${label('fs_level', a.fs_level)}${a.fs_points ? ' · '+label('fs_points', a.fs_points) : ''}${a.fs_master ? ' · '+label('fs_master', a.fs_master) : ''}${a.fs_notes ? ' · 备注：'+a.fs_notes : ''}</span>
+    </div>`;
+  }
+  if (a.gods === 'yes_god') {
+    html += `<div class="need-item">
+      <span class="need-badge warn">神位</span>
+      <span>需要设置神位/佛龛</span>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // ===== 6. 预算框架 =====
+  html += `<div class="summary-card">
+    <h3>💰 预算框架</h3>`;
+
+  const budgetPct = calculateBudgetPct(a, budget);
+  html += `<div style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:8px">${budget}万 <span style="font-size:13px;color:var(--text-light);font-weight:400">总投入 · 约${budgetPerSqm}元/㎡</span></div>`;
+
+  html += `<div class="budget-bar-wrap">
+    <div class="seg" style="width:${budgetPct.hard}%;background:var(--dark)"></div>
+    <div class="seg" style="width:${budgetPct.soft}%;background:var(--gold)"></div>
+    <div class="seg" style="width:${budgetPct.app}%;background:#C9A87C"></div>
+    <div class="seg" style="width:${budgetPct.design}%;background:#E8D5C0"></div>
+  </div>
+  <div class="budget-legend" style="margin-top:8px">
+    <span><span class="budget-dot" style="background:var(--dark)"></span>硬装 ${budgetPct.hard}% (约${Math.round(budget*budgetPct.hard/100)}万)</span>
+    <span><span class="budget-dot" style="background:var(--gold)"></span>软装 ${budgetPct.soft}% (约${Math.round(budget*budgetPct.soft/100)}万)</span>
+    <span><span class="budget-dot" style="background:#C9A87C"></span>家电 ${budgetPct.app}% (约${Math.round(budget*budgetPct.app/100)}万)</span>
+    <span><span class="budget-dot" style="background:#E8D5C0"></span>设计/其他 ${budgetPct.design}% (约${Math.round(budget*budgetPct.design/100)}万)</span>
+  </div>`;
+
+  const focusLabel = label('budget_focus', a.budget_focus);
+  if (focusLabel) {
+    html += `<div class="insight" style="margin-top:12px">
+      <div class="insight-title">价值取向</div>
+      <div class="insight-text">客户更愿意投入在：<strong>${focusLabel}</strong>${
+        a.budget_focus === 'focus_hard' ? ' → 隐蔽工程和材料品质是核心卖点' :
+        a.budget_focus === 'focus_soft' ? ' → 视觉效果和家具搭配是重点' :
+        a.budget_focus === 'focus_smart' ? ' → 智能系统和科技体验是差异化方向' :
+        ' → 整体均衡，每项都需兼顾'
+      }</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // ===== 7. 设计要点清单 =====
+  html += `<div class="summary-card">
+    <h3>✅ 设计决策要点清单</h3>`;
+
+  const checkList = buildCheckList(a);
+  checkList.forEach(item => {
+    html += `<div class="need-item">
+      <span class="need-badge ${item.type}">${item.label}</span>
+      <span>${item.text}</span>
+    </div>`;
+  });
+
+  if (checkList.length === 0) {
+    html += `<div style="font-size:13px;color:var(--text-light);padding:12px 0">基础需求已确认，具体设计细节可进一步沟通</div>`;
+  }
+
+  html += `</div>`;
+
+  html += `</div>`; // container
+
+  // Footer
+  html += `<div class="footer">
+    <p>广东表里如一工程有限公司</p>
+    <p style="font-size:12px;margin-top:4px;opacity:0.6">本报告由「表里如一 · 客户需求调研系统」自动生成</p>
+  </div>`;
+
+  // Actions
+  html += `<div class="actions">
+    <button class="btn btn-outline" onclick="window.print()">🖨️ 打印/保存PDF</button>
+    <button class="btn btn-primary" onclick="window.location.href='index.html'">📝 重新填写</button>
+  </div>`;
+
+  return html;
+}
+
+// ============ Helper: Build Profile ============
+function buildProfile(a, budget, areaNum) {
+  const parts = [];
+  const tags = [];
+
+  // Living profile
+  const countLabel = label('count', a.count) || '';
+  if (countLabel) parts.push(countLabel);
+
+  const memberInfo = [];
+  if (has(a, 'members', 'couple')) memberInfo.push('夫妻/伴侣');
+  if (has(a, 'members', 'child_young')) memberInfo.push('婴幼儿');
+  if (has(a, 'members', 'child_school')) memberInfo.push('学龄儿童');
+  if (has(a, 'members', 'teen')) memberInfo.push('青少年');
+  if (has(a, 'members', 'elder')) memberInfo.push('长辈');
+  if (has(a, 'members', 'single')) memberInfo.push('单身');
+  if (memberInfo.length > 0) parts.push(memberInfo.join('+'));
+
+  // Pets
+  if (a.pets && !has(a, 'pets', 'none')) {
+    parts.push('养' + label('pets', a.pets));
+  }
+
+  // Kids / Elder
+  if (a.has_kids && a.has_kids !== 'no') tags.push('育儿家庭');
+  if (a.elder_live && a.elder_live !== 'no') tags.push('适老化需求');
+
+  // Key feature
+  if (a.rooms) {
+    const roomLabel = label('rooms', a.rooms);
+    if (roomLabel && roomLabel.length > 15) {
+      const first = roomLabel.split('、')[0];
+      parts.push(`重点需求：${first}等`);
+    } else if (roomLabel) {
+      parts.push(`功能需求：${roomLabel}`);
+    }
+  }
+
+  // Style
+  const styleLabel = label('design_style', a.design_style);
+  if (styleLabel) {
+    const firstStyle = styleLabel.split('、')[0];
+    parts.push(`偏好${firstStyle}`);
+    if (a.tone) tags.push(label('tone', a.tone));
+  }
+
+  // Budget tier
+  if (budget < 15) tags.push('经济型');
+  else if (budget < 30) tags.push('品质型');
+  else if (budget < 60) tags.push('中高端');
+  else tags.push('高端定制');
+
+  // Smart
+  if (a.smart_level && a.smart_level !== 'none') tags.push('全屋智能');
+
+  // Kitchen
+  if (a.kitchen_type === 'open') tags.push('开放式厨房');
+  else if (a.kitchen_type === 'semi') tags.push('半开放厨房');
+
+  // WFH
+  if (a.wfh === 'wfh_full') tags.push('居家办公');
+
+  // Party
+  if (a.party === 'party_often') tags.push('社交达人');
+
+  // Hobby
+  if (a.hobby) {
+    const hobbyLabels = label('hobby', a.hobby).split('、');
+    hobbyLabels.slice(0, 2).forEach(h => {
+      if (!tags.includes(h)) tags.push(h);
+    });
+  }
+
+  // Fengshui
+  if (a.fs_level === 'fs_high' || a.fs_level === 'fs_moderate') tags.push('讲究风水');
+
+  const oneLiner = `这是一位${a.area ? label('area', a.area)+'的' : ''}${a.facing ? label('facing', a.facing)+'，' : ''}预算${budget}万的客户。${parts.join('，')}。`;
+
+  return { oneLiner, tags };
+}
+
+// ============ Helper: Build Room Needs ============
+function buildRoomNeeds(a) {
+  const rooms = [];
+  const roomData = a.rooms;
+  if (!roomData || roomData.length === 0) return rooms;
+
+  const configs = {
+    esports: { icon:'🎮', name:'电竞房', items:[] },
+    study: { icon:'📚', name:'书房', items:[] },
+    home_theater: { icon:'🎬', name:'家庭影音室', items:[] },
+    gym: { icon:'🏋️', name:'健身区', items:[] },
+    tea: { icon:'🍵', name:'茶室', items:[] },
+    bar: { icon:'🍸', name:'调酒吧台', items:[] },
+    walkin: { icon:'👔', name:'独立衣帽间', items:[] },
+    suite: { icon:'🛏️', name:'主卧套间', items:[] },
+    guest: { icon:'🛋️', name:'客房', items:[] },
+    laundry: { icon:'🧺', name:'家政间', items:[] },
+    storage: { icon:'📦', name:'储物间', items:[] },
+    garden: { icon:'🌿', name:'阳台花园', items:[] }
+  };
+
+  for (const key of roomData) {
+    if (!configs[key]) continue;
+    const cfg = configs[key];
+    cfg.items.push({ type:'need', badge:'需求', text:`客户选择「${label('rooms', key)}」功能空间` });
+
+    // Detail follow-ups
+    if (key === 'esports' && a.esports_detail) {
+      label('esports_detail', a.esports_detail).split('、').forEach(d => {
+        cfg.items.push({ type:'design', badge:'设计要点', text:d });
+      });
+      if (has(a, 'esports_detail', 'es_sound')) {
+        cfg.items.push({ type:'warn', badge:'注意', text:'电竞房隔音需做墙体隔音棉+密封门+地毯吸音' });
+      }
+      if (has(a, 'esports_detail', 'es_cool')) {
+        cfg.items.push({ type:'warn', badge:'注意', text:'需预留独立空调回路，设备散热功率需计算' });
+      }
+    }
+
+    if (key === 'study' && a.study_detail) {
+      label('study_detail', a.study_detail).split('、').forEach(d => {
+        cfg.items.push({ type:'design', badge:'设计要点', text:d });
+      });
+    }
+
+    if (key === 'home_theater' && a.theater_detail) {
+      label('theater_detail', a.theater_detail).split('、').forEach(d => {
+        cfg.items.push({ type:'design', badge:'设计要点', text:d });
+      });
+      if (has(a, 'theater_detail', 'th_sound')) {
+        cfg.items.push({ type:'warn', badge:'注意', text:'影音室需专业声学设计：隔音+吸音+扩散，预算需增加15-20%' });
+      }
+    }
+
+    if (key === 'suite' && a.suite_detail) {
+      label('suite_detail', a.suite_detail).split('、').forEach(d => {
+        cfg.items.push({ type:'design', badge:'设计要点', text:d });
+      });
+    }
+
+    if (key === 'bar') {
+      cfg.items.push({ type:'design', badge:'设计要点', text:'需预留上下水+电源，建议靠近厨房或客餐厅' });
+    }
+
+    if (key === 'tea') {
+      cfg.items.push({ type:'design', badge:'设计要点', text:'茶室需考虑通风+排水，建议近阳台或窗边' });
+    }
+
+    if (key === 'gym') {
+      cfg.items.push({ type:'warn', badge:'注意', text:'健身区地板需减震处理，避免影响楼下，大重量设备需加固地面' });
+    }
+
+    rooms.push(cfg);
+  }
+
+  return rooms;
+}
+
+// ============ Helper: Build Style Info ============
+function buildStyleInfo(a) {
+  const styles = [];
+  if (a.design_style) {
+    label('design_style', a.design_style).split('、').forEach(s => styles.push(s));
+  }
+  if (a.tone) styles.push(label('tone', a.tone));
+  return { styles };
+}
+
+// ============ Helper: Budget Pct ============
+function calculateBudgetPct(a, budget) {
+  const focus = a.budget_focus;
+  // Default: 50/25/15/10
+  let hard = 50, soft = 25, app = 15, design = 10;
+
+  if (focus === 'focus_hard') { hard = 60; soft = 18; app = 12; design = 10; }
+  else if (focus === 'focus_soft') { hard = 40; soft = 35; app = 15; design = 10; }
+  else if (focus === 'focus_smart') { hard = 45; soft = 20; app = 20; design = 15; }
+
+  // Adjust for small/big budget
+  if (budget < 15) { hard = 65; soft = 20; app = 10; design = 5; }
+  if (budget > 80) { hard = 45; soft = 25; app = 18; design = 12; }
+
+  return { hard, soft, app, design };
+}
+
+// ============ Helper: Design Checklist ============
+function buildCheckList(a) {
+  const list = [];
+
+  // Open kitchen warning
+  if ((a.kitchen_type === 'open' || a.kitchen_type === 'semi') && has(a, 'cook_style', 'heavy_oil')) {
+    list.push({ type:'warn', label:'⚠️ 冲突', text:'开放厨房+重油爆炒 → 需强吸力油烟机+考虑气溶胶隔离方案，或建议半开放+玻璃移门' });
+  }
+
+  // Elder + no step
+  if (a.elder_live && a.elder_live !== 'no' && has(a, 'elder_needs', 'elder_no_step')) {
+    list.push({ type:'design', label:'设计', text:'全屋无高差地面 → 施工时门槛石全部取消/做斜坡过渡，卫生间做下沉式淋浴' });
+  }
+
+  // Pet + cat wall
+  if (a.cat_space && has(a, 'cat_space', 'cat_wall')) {
+    list.push({ type:'design', label:'设计', text:'猫咪空中走廊 → 需在墙体预埋支撑件，建议与全屋定制同步设计' });
+  }
+
+  // Smart + pre-wire
+  if (a.smart_level === 'full' || a.smart_level === 'partial') {
+    list.push({ type:'need', label:'⏰ 水电', text:'全屋智能 → 水电阶段必须预留零火线+每个房间网口+窗帘电机电源+弱电箱扩容' });
+  }
+
+  // Fresh air pre-pipe
+  if (a.fresh_air === 'maybe_fresh') {
+    list.push({ type:'design', label:'预留', text:'新风管道预埋 → 吊顶施工前完成管道铺设，主机可后期安装' });
+  }
+
+  // Floor heating
+  if (a.heating === 'floor') {
+    list.push({ type:'need', label:'⏰ 水电', text:'全屋地暖 → 水电阶段铺设，需考虑地面抬高5-8cm对层高的影响' });
+  }
+
+  // Fengshui specific
+  if (a.fs_points && has(a, 'fs_points', 'fs_door')) {
+    list.push({ type:'warn', label:'风水', text:'大门不对厕所/厨房 → 需通过隔断/隐形门/动线调整规避' });
+  }
+  if (a.fs_points && has(a, 'fs_points', 'fs_beam')) {
+    list.push({ type:'warn', label:'风水', text:'梁压沙发/床 → 吊顶包梁或调整家具摆放位置' });
+  }
+
+  // Book collection
+  if (a.study_detail && has(a, 'study_detail', 'st_books')) {
+    list.push({ type:'warn', label:'⚠️', text:'大量藏书 → 书架需考虑承重（常规楼板荷载200kg/㎡），超过需加固' });
+  }
+
+  return list;
+}
+
+// ============ Init ============
+document.addEventListener('DOMContentLoaded', () => {
+  const raw = sessionStorage.getItem('survey_answers');
+  if (!raw) {
+    document.getElementById('report').innerHTML = `
+      <div class="container">
+        <div class="empty-hint">
+          <p style="font-size:40px;margin-bottom:12px">📋</p>
+          <p>暂未找到调研数据</p>
+          <p style="font-size:13px;color:var(--text-light)">请先填写需求调研表</p>
+          <button onclick="window.location.href='index.html'">返回填写</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  try {
+    const answers = JSON.parse(raw);
+    document.getElementById('report').innerHTML = buildReport(answers);
+  } catch(e) {
+    document.getElementById('report').innerHTML = '<div class="container"><div class="empty-hint"><p>数据解析异常，请重新填写</p></div></div>';
+  }
+});
+</script>
+</body>
+</html>
