@@ -538,23 +538,37 @@ const sections = [
   {
     id: 'basic', icon: '🏠', title: '房屋基础', desc: '先了解一下房子的基本情况',
     questions: [
-      { id: 'area', type: 'choice', label: '房屋面积', required: true,
+      { id: 'house_type', type: 'choice', label: '房屋类型', required: true,
         options: [
-          { v:'60-', l:'60㎡以下' },{ v:'60-90', l:'60-90㎡' },
-          { v:'90-120', l:'90-120㎡' },{ v:'120-160', l:'120-160㎡' },
-          { v:'160-200', l:'160-200㎡' },{ v:'200+', l:'200㎡以上' }
-        ]},
-      { id: 'layout', type: 'choice', label: '户型', required: true,
-        options: [
-          { v:'1br', l:'一居室' },{ v:'2br', l:'两居室' },
-          { v:'3br', l:'三居室' },{ v:'4br+', l:'四居室及以上' },
-          { v:'loft', l:'复式/LOFT' },{ v:'villa', l:'别墅' },
-          { v:'self_build', l:'🏠 自建房' }
+          { v:'apartment', l:'🏢 普通商品房' },
+          { v:'loft', l:'🏗️ 复式/LOFT' },
+          { v:'self_build', l:'🏠 自建房' },
+          { v:'villa', l:'🏡 别墅' }
         ],
         followUp: [
+          { match: ['apartment','loft','self_build','villa'], id: 'area', type: 'choice', label: '房屋面积',
+            options: [
+              { v:'60-', l:'60㎡以下' },{ v:'60-90', l:'60-90㎡' },
+              { v:'90-120', l:'90-120㎡' },{ v:'120-160', l:'120-160㎡' },
+              { v:'160-200', l:'160-200㎡' },{ v:'200+', l:'200㎡以上' }
+            ]},
+          { match: ['villa','self_build'], id: 'renovation_scope', type: 'choice', label: '装修范围',
+            options: [{ v:'whole', l:'整栋整体装修' },{ v:'partial', l:'只装部分楼层' }]},
+          { match: ['apartment','loft'], id: 'layout', type: 'choice', label: '户型',
+            options: [
+              { v:'1br', l:'一居室' },{ v:'2br', l:'两居室' },
+              { v:'3br', l:'三居室' },{ v:'4br+', l:'四居室及以上' },
+              { v:'layout_unsure', l:'不确定，需要设计师建议' }
+            ]},
+          { match: 'partial', id: 'layout_partial', type: 'choice', label: '装修部分户型',
+            options: [
+              { v:'1br', l:'一居室' },{ v:'2br', l:'两居室' },
+              { v:'3br', l:'三居室' },{ v:'4br+', l:'四居室及以上' },
+              { v:'layout_unsure', l:'不确定，需要设计师建议' }
+            ]},
           { match: ['villa','self_build'], id: 'floor', type: 'choice', label: '楼层偏好',
-            options: [{ v:'low', l:'低层(1-6楼)' },{ v:'mid', l:'中层(7-15楼)' },
-              { v:'high', l:'高层(16楼+)' },{ v:'any', l:'无所谓' }]},
+            options: [{ v:'low', l:'低层(1-3层)' },{ v:'mid', l:'中层(4-6层)' },
+              { v:'high', l:'中高层(6层以上)' }]},
           { match: ['villa','self_build'], id: 'facing', type: 'choice', label: '朝向',
             options: [{ v:'south', l:'朝南' },{ v:'north', l:'朝北' },
               { v:'east', l:'朝东' },{ v:'west', l:'朝西' },
@@ -993,18 +1007,18 @@ function onMultiChange(id, value, el, secIdx, qi) {
 function onFuChange(id, value) {
   answers[id] = value;
   const sec = sections[currentSection];
-  sec.questions.forEach((q,qi) => {
-    if (q.followUp) {
-      q.followUp.forEach(fu => {
-        if (fu.id === id && fu.type === 'choice' && fu.match && typeof fu.match === 'string' && fu.match === value) {
-          const nested = q.followUp.filter(f => f.match === value);
-          nested.forEach(nf => {
-            const el = document.getElementById('fu-'+nf.id);
-            if (el) el.classList.add('show');
-          });
-        }
-      });
-    }
+  sec.questions.forEach((q) => {
+    if (!q.followUp) return;
+    // 确认当前 followUp 属于这个问题
+    if (!q.followUp.some(fu => fu.id === id)) return;
+    // 切换同组 followUp 中以当前值为 match 的嵌套项
+    q.followUp.forEach(fu => {
+      if (fu.id === id) return;
+      if (typeof fu.match === 'string') {
+        const el = document.getElementById('fu-'+fu.id);
+        if (el) el.classList.toggle('show', fu.match === value);
+      }
+    });
   });
 }
 
@@ -1062,6 +1076,16 @@ function updateFollowUps(secIdx, qi) {
       }
 
       el.classList.toggle('show', shouldShow);
+    });
+    // 第二轮：处理嵌套依赖（followUp 依赖兄弟 followUp 的值）
+    q.followUp.forEach(fu => {
+      const el = document.getElementById('fu-'+fu.id);
+      if (!el || el.classList.contains('show')) return;
+      if (typeof fu.match !== 'string') return;
+      const nested = q.followUp.some(sibling =>
+        sibling.id !== fu.id && answers[sibling.id] === fu.match
+      );
+      if (nested) el.classList.toggle('show', true);
     });
   }, 50);
 }
