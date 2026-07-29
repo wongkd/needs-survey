@@ -1007,18 +1007,10 @@ function onMultiChange(id, value, el, secIdx, qi) {
 function onFuChange(id, value) {
   answers[id] = value;
   const sec = sections[currentSection];
-  sec.questions.forEach((q) => {
+  sec.questions.forEach((q, qi) => {
     if (!q.followUp) return;
-    // 确认当前 followUp 属于这个问题
     if (!q.followUp.some(fu => fu.id === id)) return;
-    // 切换同组 followUp 中以当前值为 match 的嵌套项
-    q.followUp.forEach(fu => {
-      if (fu.id === id) return;
-      if (typeof fu.match === 'string') {
-        const el = document.getElementById('fu-'+fu.id);
-        if (el) el.classList.toggle('show', fu.match === value);
-      }
-    });
+    updateFollowUps(currentSection, qi);
   });
 }
 
